@@ -3474,9 +3474,98 @@ tr {
   .topnav-hamburger {
     display: flex;
   }
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  /* ─── Expandable Stats Layout ─────────────────────────────── */
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+    margin-bottom: var(--space-6);
+    align-items: start;
+}
+
+/* Expanded/focus layout */
+.stats-row.focus-layout {
+    grid-template-columns: minmax(0, 2.4fr) minmax(180px, 0.9fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+/* Selected card becomes the large left panel */
+.stats-row.focus-layout .expandable-card.expanded {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+
+/* The other two cards become the right-side stack */
+.stats-row.focus-layout .expandable-card.side-top {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.stats-row.focus-layout .expandable-card.side-bottom {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/*
+ * FLIP animation applies the actual movement/resize.
+ * The grid itself changes instantly underneath,
+ * while these transforms make the change appear continuous.
+ */
+.stats-row .expandable-card {
+    will-change: transform;
+}
+
+/* Expanded content */
+.expandable-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 20px;
+
+    transition:
+        max-height 0.35s ease,
+        opacity 0.25s ease,
+        padding 0.35s ease;
+}
+
+.expandable-card.expanded {
+    height: auto !important;
+}
+
+.expandable-card.expanded .stat-card-details {
+    max-height: 300px;
+    opacity: 1;
+    padding: 20px;
+}
+
+.stat-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.stat-detail-item span {
+    font-size: 14px;
+}
+
+.stat-detail-item strong {
+    font-size: 16px;
+}
+
+.stat-card-arrow {
+    transition: transform 0.3s ease;
+}
+
+.expandable-card.expanded .stat-card-arrow {
+    transform: rotate(90deg);
+}
   .welcome-section {
     flex-direction: column;
     gap: var(--space-4);
@@ -4373,4 +4462,38 @@ p,
 .analytics-bar-value {
   letter-spacing: 0;
   line-height: 1.5;
+}
+/* =========================================
+   EXPANDED STATS CARD LAYOUT
+   ========================================= */
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+    align-items: stretch;
+}
+
+/* Expanded layout */
+.stats-row.focus-layout {
+    grid-template-columns: minmax(0, 2.4fr) minmax(180px, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+/* Big selected card */
+.stats-row.focus-layout .expandable-card.expanded {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+
+/* First small card on right */
+.stats-row.focus-layout .expandable-card.side-top {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* Second small card on right */
+.stats-row.focus-layout .expandable-card.side-bottom {
+    grid-column: 2;
+    grid-row: 2;
 }

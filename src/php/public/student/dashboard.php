@@ -452,10 +452,102 @@ document.addEventListener('keydown', function(e) {
 });
 
 //expand the card clicked
-document.querySelectorAll('.expandable-card').forEach(card => {
-    card.addEventListener('click', function() {
-        card.classList.toggle('expanded');
+// Expand/collapse cards with smooth movement + resizing
+
+const statsRow = document.querySelector('.stats-row');
+const expandableCards = document.querySelectorAll('.expandable-card');
+
+function animateCards(callback) {
+
+    const cards = [...expandableCards];
+
+    // Remember current position and size
+    const first = new Map();
+
+    cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+
+        first.set(card, {
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height
+        });
     });
+
+    // Change the layout
+    callback();
+
+    // Force the browser to calculate the new layout
+    statsRow.offsetHeight;
+
+    // Animate old position/size → new position/size
+    cards.forEach(card => {
+
+        const oldRect = first.get(card);
+        const newRect = card.getBoundingClientRect();
+
+        const deltaX = oldRect.left - newRect.left;
+        const deltaY = oldRect.top - newRect.top;
+
+        const scaleX = oldRect.width / newRect.width;
+        const scaleY = oldRect.height / newRect.height;
+
+        card.animate(
+            [
+                {
+                    transform:
+                        `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`
+                },
+                {
+                    transform: 'translate(0, 0) scale(1, 1)'
+                }
+            ],
+            {
+                duration: 500,
+                easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                fill: 'both'
+            }
+        );
+    });
+}
+
+
+expandableCards.forEach(card => {
+
+    card.addEventListener('click', function () {
+
+        const isAlreadyExpanded =
+            card.classList.contains('expanded');
+
+        animateCards(() => {
+
+            // Reset all cards
+            expandableCards.forEach(otherCard => {
+                otherCard.classList.remove('expanded');
+                otherCard.classList.remove('side-top');
+                otherCard.classList.remove('side-bottom');
+            });
+
+            statsRow.classList.remove('focus-layout');
+
+            // Expand clicked card
+            if (!isAlreadyExpanded) {
+
+                card.classList.add('expanded');
+                statsRow.classList.add('focus-layout');
+
+                const otherCards =
+                    [...expandableCards]
+                    .filter(other => other !== card);
+
+                otherCards[0].classList.add('side-top');
+                otherCards[1].classList.add('side-bottom');
+            }
+        });
+
+    });
+
 });
 
 // Focus trap when sidebar open
