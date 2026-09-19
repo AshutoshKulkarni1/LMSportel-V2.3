@@ -22,6 +22,10 @@ $tests = getStudentTests($studentId);
 $totalTests = count($tests);
 $completedTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'evaluated'));
 $pendingTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'in_progress' || ($t['status'] === 'active' && !$t['submission_status'])));
+$totalQuestions = array_sum(array_map(
+    fn($t) => (int)($t['total_questions'] ?? 0),
+    $tests
+));
 $inProgressTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'in_progress'));
 
 $notStartedTests = count(array_filter($tests, fn($t) =>
@@ -84,7 +88,9 @@ $currentPage = 'dashboard';
                         <div class="stat-card-value"><?= $totalTests ?></div>
                         <div class="stat-card-label">Total Tests</div>
                         <div class="stat-card-desc">All assigned assessments</div>
-                        <div class="stat-card-arrow"><?= icon('chevron.down', 18) ?></div>
+                        <div class="stat-card-arrow"><a href="test-analysis.php">
+    <?= icon('chevron.right', 18) ?>
+</a></div>
                          <div class="stat-card-details">
 
     <div class="stat-detail-item">
@@ -113,6 +119,10 @@ $currentPage = 'dashboard';
         <span>Completion Rate</span>
         <strong><?= $completionRate ?>%</strong>
     </div>
+    <div class="stat-detail-item">
+    <span>Total Questions</span>
+    <strong><?= $totalQuestions ?></strong>
+</div>
 
 </div>
                     </div>
@@ -160,6 +170,7 @@ $currentPage = 'dashboard';
         <span>Not Started</span>
         <strong><?= $notStartedTests ?></strong>
     </div>
+    
 </div>
                     </div>
                 </div>

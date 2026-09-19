@@ -1384,7 +1384,11 @@ tr {
     font-size: 16px;
 }
 .stat-card-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.3s ease;
+    text-decoration: none;
 }
 
 .expandable-card.expanded .stat-card-arrow {
