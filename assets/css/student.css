@@ -1369,7 +1369,20 @@ tr {
     opacity: 1;
     padding: 20px;
 }
+.stat-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
 
+.stat-detail-item span {
+    font-size: 14px;
+}
+
+.stat-detail-item strong {
+    font-size: 16px;
+}
 .stat-card-arrow {
     transition: transform 0.3s ease;
 }
@@ -1377,7 +1390,12 @@ tr {
 .expandable-card.expanded .stat-card-arrow {
     transform: rotate(90deg);
 }
-
+.stats-row {
+    align-items: start;
+}
+.stat-card-gradient {
+    align-self: start;
+}
 .stat-card {
   background: var(--surface-card);
   border: 1px solid var(--glass-border);

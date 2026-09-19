@@ -22,7 +22,16 @@ $tests = getStudentTests($studentId);
 $totalTests = count($tests);
 $completedTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'evaluated'));
 $pendingTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'in_progress' || ($t['status'] === 'active' && !$t['submission_status'])));
+$inProgressTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'in_progress'));
 
+$notStartedTests = count(array_filter($tests, fn($t) =>
+    empty($t['submission_status']) &&
+    $t['status'] !== 'completed'
+));
+
+$completionRate = $totalTests > 0
+    ? round(($completedTests / $totalTests) * 100)
+    : 0;
 // Date helpers
 $today = new DateTime();
 $dayName = $today->format('l');
@@ -76,11 +85,38 @@ $currentPage = 'dashboard';
                         <div class="stat-card-label">Total Tests</div>
                         <div class="stat-card-desc">All assigned assessments</div>
                         <div class="stat-card-arrow"><?= icon('chevron.down', 18) ?></div>
-                         <div class="stat-card-details">All tests expanded successfully
-                            
-                        </div>
+                         <div class="stat-card-details">
+
+    <div class="stat-detail-item">
+        <span>Completed</span>
+        <strong><?= $completedTests ?></strong>
+    </div>
+
+    <div class="stat-detail-item">
+        <span>Pending / Active</span>
+        <strong><?= $pendingTests ?></strong>
+    </div>
+
+    <div class="stat-detail-item">
+        <span>In Progress</span>
+        <strong><?= $inProgressTests ?></strong>
+    </div>
+
+    <div class="stat-detail-item">
+        <span>Not Started</span>
+        <strong><?= $notStartedTests ?></strong>
+    </div>
+
+    <div class="stat-detail-divider"></div>
+
+    <div class="stat-detail-item completion-item">
+        <span>Completion Rate</span>
+        <strong><?= $completionRate ?>%</strong>
+    </div>
+
+</div>
                     </div>
-                    <div class="stat-card-gradient stat-card-completed">
+                    <div class="stat-card-gradient stat-card-completed expandable-card">
                         <div class="stat-card-icon">
                             <?= icon('checkmark.circle.fill', 24) ?>
                         </div>
@@ -88,9 +124,20 @@ $currentPage = 'dashboard';
                         <div class="stat-card-label">Completed</div>
                         <div class="stat-card-desc">Evaluated submissions</div>
                         <div class="stat-card-arrow"><?= icon('arrow.right.circle.fill', 14) ?></div>
+                        <div class="stat-card-details">
+    <div class="stat-detail-item">
+        <span>Completed Tests</span>
+        <strong><?= $completedTests ?></strong>
+    </div>
+
+    <div class="stat-detail-item">
+        <span>Completion Rate</span>
+        <strong><?= $completionRate ?>%</strong>
+    </div>
+</div>
                        
                     </div>
-                    <div class="stat-card-gradient stat-card-pending">
+                    <div class="stat-card-gradient stat-card-pending expandable-card">
                         <div class="stat-card-icon">
                             <?= icon('clock.badge.exclamationmark.fill', 24) ?>
                         </div>
@@ -98,6 +145,22 @@ $currentPage = 'dashboard';
                         <div class="stat-card-label">Pending / Active</div>
                         <div class="stat-card-desc">In progress or not started</div>
                         <div class="stat-card-arrow"><?= icon('arrow.right.circle.fill', 14) ?></div>
+                        <div class="stat-card-details">
+    <div class="stat-detail-item">
+        <span>Pending / Active</span>
+        <strong><?= $pendingTests ?></strong>
+    </div>
+
+    <div class="stat-detail-item">
+        <span>In Progress</span>
+        <strong><?= $inProgressTests ?></strong>
+    </div>
+
+    <div class="stat-detail-item">
+        <span>Not Started</span>
+        <strong><?= $notStartedTests ?></strong>
+    </div>
+</div>
                     </div>
                 </div>
 
@@ -389,12 +452,9 @@ document.addEventListener('keydown', function(e) {
 });
 
 //expand the card clicked
-document.querySelectorAll('.expandable-card').forEach(card=>{
-    const arrow = card.querySelector('.stat-card-arrow');
-    arrow.addEventListener('click', function(e){
-        e.stopPropagation();
+document.querySelectorAll('.expandable-card').forEach(card => {
+    card.addEventListener('click', function() {
         card.classList.toggle('expanded');
-
     });
 });
 
