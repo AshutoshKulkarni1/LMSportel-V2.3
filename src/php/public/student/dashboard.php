@@ -26,6 +26,55 @@ $totalQuestions = array_sum(array_map(
     fn($t) => (int)($t['total_questions'] ?? 0),
     $tests
 ));
+// Latest completed test details
+$completedTestsList = array_values(array_filter($tests, fn($t) =>
+    $t['submission_status'] === 'evaluated'
+));
+
+$latestCompletedTest = $completedTestsList[0] ?? null;
+
+$completedPercentage = 0;
+$completedTimeTaken = '—';
+$completedDate = '—';
+
+if ($latestCompletedTest) {
+    // Calculate percentage
+    $obtainedMarks = (float)($latestCompletedTest['total_marks_obtained'] ?? 0);
+    $totalMarks = (float)($latestCompletedTest['total_marks'] ?? 0);
+
+    if ($totalMarks > 0) {
+        $completedPercentage = round(($obtainedMarks / $totalMarks) * 100);
+    }
+
+    // Format completion date
+    if (!empty($latestCompletedTest['submitted_at'])) {
+        $completedDate = (new DateTime($latestCompletedTest['submitted_at']))
+            ->format('M j, Y • g:i A');
+    }
+
+    // Calculate actual time taken
+    if (
+        !empty($latestCompletedTest['started_at']) &&
+        !empty($latestCompletedTest['submitted_at'])
+    ) {
+        $start = new DateTime($latestCompletedTest['started_at']);
+        $end = new DateTime($latestCompletedTest['submitted_at']);
+
+        $seconds = max(
+            0,
+            $end->getTimestamp() - $start->getTimestamp()
+        );
+
+        $minutes = floor($seconds / 60);
+        $remainingSeconds = $seconds % 60;
+
+        $completedTimeTaken = $minutes . 'm';
+
+        if ($remainingSeconds > 0) {
+            $completedTimeTaken .= ' ' . $remainingSeconds . 's';
+        }
+    }
+}
 $inProgressTests = count(array_filter($tests, fn($t) => $t['submission_status'] === 'in_progress'));
 
 $notStartedTests = count(array_filter($tests, fn($t) =>
@@ -135,15 +184,54 @@ $currentPage = 'dashboard';
                         <div class="stat-card-desc">Evaluated submissions</div>
                         <div class="stat-card-arrow"><?= icon('arrow.right.circle.fill', 14) ?></div>
                         <div class="stat-card-details">
-    <div class="stat-detail-item">
-        <span>Completed Tests</span>
-        <strong><?= $completedTests ?></strong>
-    </div>
 
-    <div class="stat-detail-item">
-        <span>Completion Rate</span>
-        <strong><?= $completionRate ?>%</strong>
-    </div>
+    <?php if ($latestCompletedTest): ?>
+
+        <div class="completed-test-name">
+            <?= htmlspecialchars($latestCompletedTest['title']) ?>
+        </div>
+
+        <div class="completed-test-date">
+            Completed <?= htmlspecialchars($completedDate) ?>
+        </div>
+
+        <div class="completed-test-meta">
+
+            <div class="completed-test-meta-item">
+                <span>Score</span>
+                <strong>
+                    <?= (float)$latestCompletedTest['total_marks_obtained'] ?>
+                    /
+                    <?= (float)$latestCompletedTest['total_marks'] ?>
+                </strong>
+            </div>
+
+            <div class="completed-test-meta-item">
+                <span>Percentage</span>
+                <strong><?= $completedPercentage ?>%</strong>
+            </div>
+
+            <div class="completed-test-meta-item">
+                <span>Time Taken</span>
+                <strong><?= htmlspecialchars($completedTimeTaken) ?></strong>
+            </div>
+
+        </div>
+
+        <a href="test-analysis.php" class="completed-analysis-link">
+            View Analysis
+            <?= icon('chevron.right', 16) ?>
+        </a>
+
+    <?php else: ?>
+
+        <div class="completed-empty">
+            <strong>No completed tests yet</strong>
+            <span>Complete an assessment to see your results here.</span>
+        </div>
+
+    <?php endif; ?>
+
 </div>
                        
                     </div>

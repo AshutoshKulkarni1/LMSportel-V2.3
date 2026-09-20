@@ -4729,3 +4729,70 @@ p,
     }
 
 }
+
+.completed-test-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.completed-test-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.completed-test-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.completed-test-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.completed-test-meta-item span {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.completed-test-meta-item strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.completed-analysis-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.completed-analysis-link:hover {
+    text-decoration: underline;
+}
+
+.completed-empty {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.completed-empty strong {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.completed-empty span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
