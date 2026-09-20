@@ -131,50 +131,66 @@ $currentPage = 'dashboard';
                 <!-- KPI Cards — Apple SF Symbols naming, Lucide rendered, Material fallback -->
                 <div class="stats-row">
                     <div class="stat-card-gradient stat-card-total expandable-card">
-                        <div class="stat-card-icon">
-                            <?= icon('doc.text.fill', 24) ?>
-                        </div>
-                        <div class="stat-card-value"><?= $totalTests ?></div>
-                        <div class="stat-card-label">Total Tests</div>
-                        <div class="stat-card-desc">All assigned assessments</div>
-                        <div class="stat-card-arrow"><a href="test-analysis.php">
-    <?= icon('chevron.right', 18) ?>
-</a></div>
-                         <div class="stat-card-details">
 
-    <div class="stat-detail-item">
-        <span>Completed</span>
-        <strong><?= $completedTests ?></strong>
+    <div class="stat-card-icon">
+        <?= icon('doc.text.fill', 24) ?>
     </div>
 
-    <div class="stat-detail-item">
-        <span>Pending / Active</span>
-        <strong><?= $pendingTests ?></strong>
+    <div class="stat-card-value">
+        <?= $totalTests ?>
     </div>
 
-    <div class="stat-detail-item">
-        <span>In Progress</span>
-        <strong><?= $inProgressTests ?></strong>
+    <div class="stat-card-label">
+        Total Tests
     </div>
 
-    <div class="stat-detail-item">
-        <span>Not Started</span>
-        <strong><?= $notStartedTests ?></strong>
+    <div class="stat-card-desc">
+        All assigned assessments
     </div>
 
-    <div class="stat-detail-divider"></div>
+    <div class="stat-card-details">
 
-    <div class="stat-detail-item completion-item">
-        <span>Completion Rate</span>
-        <strong><?= $completionRate ?>%</strong>
+        <div class="stat-detail-item">
+            <span>Completed</span>
+            <strong><?= $completedTests ?></strong>
+        </div>
+
+        <div class="stat-detail-item">
+            <span>Pending / Active</span>
+            <strong><?= $pendingTests ?></strong>
+        </div>
+
+        <div class="stat-detail-item">
+            <span>In Progress</span>
+            <strong><?= $inProgressTests ?></strong>
+        </div>
+
+        <div class="stat-detail-item">
+            <span>Not Started</span>
+            <strong><?= $notStartedTests ?></strong>
+        </div>
+
+        <div class="stat-detail-divider"></div>
+
+        <div class="stat-detail-item completion-item">
+            <span>Completion Rate</span>
+            <strong><?= $completionRate ?>%</strong>
+        </div>
+
+        <div class="stat-detail-item">
+            <span>Total Questions</span>
+            <strong><?= $totalQuestions ?></strong>
+        </div>
+
+        <!-- View Full Analysis — only visible when expanded -->
+        <a href="test-analysis.php" class="full-analysis-link">
+            <span>View Full Analysis</span>
+            <?= icon('arrow.right', 18) ?>
+        </a>
+
     </div>
-    <div class="stat-detail-item">
-    <span>Total Questions</span>
-    <strong><?= $totalQuestions ?></strong>
+
 </div>
-
-</div>
-                    </div>
                     <div class="stat-card-gradient stat-card-completed expandable-card">
                         <div class="stat-card-icon">
                             <?= icon('checkmark.circle.fill', 24) ?>
@@ -182,7 +198,7 @@ $currentPage = 'dashboard';
                         <div class="stat-card-value"><?= $completedTests ?></div>
                         <div class="stat-card-label">Completed</div>
                         <div class="stat-card-desc">Evaluated submissions</div>
-                        <div class="stat-card-arrow"><?= icon('arrow.right.circle.fill', 14) ?></div>
+                        
                         <div class="stat-card-details">
 
     <?php if ($latestCompletedTest): ?>
@@ -242,7 +258,7 @@ $currentPage = 'dashboard';
                         <div class="stat-card-value"><?= $pendingTests ?></div>
                         <div class="stat-card-label">Pending / Active</div>
                         <div class="stat-card-desc">In progress or not started</div>
-                        <div class="stat-card-arrow"><?= icon('arrow.right.circle.fill', 14) ?></div>
+                       
                         <div class="stat-card-details">
     <div class="stat-detail-item">
         <span>Pending / Active</span>

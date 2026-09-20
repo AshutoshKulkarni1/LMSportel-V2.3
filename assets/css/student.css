@@ -4796,3 +4796,23 @@ p,
     font-size: 12px;
     color: var(--text-secondary);
 }
+
+.full-analysis-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.full-analysis-link:hover {
+    transform: translateX(2px);
+    opacity: 0.9;
+}
