@@ -33,42 +33,209 @@ $student = $stmt->fetch();
 // Get tests
 $tests = getStudentTests($studentId);
 
-// Statistics
-$totalTests = count($tests);
+// ============================================================
+// TEST ANALYSIS DATA
+// ============================================================
 
-$completedTests = count(array_filter(
-    $tests,
-    fn($t) => $t['submission_status'] === 'evaluated'
-));
+// Test-wise performance
+$performanceData = [];
 
-$pendingTests = count(array_filter(
-    $tests,
-    fn($t) =>
-        $t['submission_status'] === 'in_progress' ||
-        ($t['status'] === 'active' && !$t['submission_status'])
-));
+foreach ($tests as $test) {
 
-$inProgressTests = count(array_filter(
-    $tests,
-    fn($t) => $t['submission_status'] === 'in_progress'
-));
+    if (empty($test['submission_id'])) {
+        continue;
+    }
 
-$notStartedTests = count(array_filter(
-    $tests,
-    fn($t) =>
-        empty($t['submission_status']) &&
-        $t['status'] !== 'completed'
-));
+    $marksObtained = (float)($test['total_marks_obtained'] ?? 0);
+    $totalMarks = (float)($test['total_marks'] ?? 0);
 
-$totalQuestions = array_sum(array_map(
-    fn($t) => (int)($t['total_questions'] ?? 0),
-    $tests
-));
+    $percentage = $totalMarks > 0
+        ? round(($marksObtained / $totalMarks) * 100, 1)
+        : 0;
 
-$completionRate = $totalTests > 0
-    ? round(($completedTests / $totalTests) * 100)
+    // Calculate time taken
+    $timeTaken = null;
+
+    if (!empty($test['started_at']) && !empty($test['submitted_at'])) {
+        $start = new DateTime($test['started_at']);
+        $end = new DateTime($test['submitted_at']);
+
+        $seconds = max(0, $end->getTimestamp() - $start->getTimestamp());
+
+        $minutes = floor($seconds / 60);
+        $remainingSeconds = $seconds % 60;
+
+        $timeTaken = $minutes . 'm';
+
+        if ($remainingSeconds > 0) {
+            $timeTaken .= ' ' . $remainingSeconds . 's';
+        }
+    }
+
+    // --------------------------------------------------------
+    // Question performance
+    // --------------------------------------------------------
+
+    $stmtAnswers = $pdo->prepare("
+        SELECT
+            sa.marks_obtained,
+            q.marks,
+            q.type
+        FROM student_answers sa
+        JOIN questions q ON q.id = sa.question_id
+        WHERE sa.submission_id = ?
+    ");
+
+    $stmtAnswers->execute([
+        $test['submission_id']
+    ]);
+
+    $answers = $stmtAnswers->fetchAll();
+
+    $correct = 0;
+    $wrong = 0;
+    $unanswered = 0;
+
+    foreach ($answers as $answer) {
+
+        $marksObtained = $answer['marks_obtained'];
+        $maxMarks = (float)$answer['marks'];
+
+        if ($marksObtained === null) {
+            $unanswered++;
+        } elseif ((float)$marksObtained >= $maxMarks) {
+            $correct++;
+        } else {
+            $wrong++;
+        }
+    }
+
+    // --------------------------------------------------------
+    // PCI
+    // --------------------------------------------------------
+
+    $stmtPCI = $pdo->prepare("
+        SELECT
+            pci_score,
+            mcq_score,
+            coding_score,
+            explanation_score,
+            mcq_weight,
+            coding_weight,
+            explanation_weight
+        FROM pci_records
+        WHERE student_id = ?
+          AND test_id = ?
+        LIMIT 1
+    ");
+
+    $stmtPCI->execute([
+        $studentId,
+        $test['id']
+    ]);
+
+    $pci = $stmtPCI->fetch();
+
+    $performanceData[] = [
+        'test_id' => (int)$test['id'],
+        'title' => $test['title'],
+
+        'score' => $marksObtained,
+        'total' => $totalMarks,
+        'percentage' => $percentage,
+
+        'correct' => $correct,
+        'wrong' => $wrong,
+        'unanswered' => $unanswered,
+
+        'time_taken' => $timeTaken ?? '—',
+
+        'pci_score' => $pci ? (float)$pci['pci_score'] : 0,
+        'mcq_score' => $pci ? (float)$pci['mcq_score'] : 0,
+        'coding_score' => $pci ? (float)$pci['coding_score'] : 0,
+        'explanation_score' => $pci ? (float)$pci['explanation_score'] : 0,
+    ];
+}
+
+
+// ============================================================
+// OVERALL ANALYSIS
+// ============================================================
+
+$evaluatedPerformance = array_filter(
+    $performanceData,
+    fn($test) => $test['total'] > 0
+);
+
+$averageScore = count($evaluatedPerformance) > 0
+    ? round(
+        array_sum(
+            array_column($evaluatedPerformance, 'percentage')
+        ) / count($evaluatedPerformance),
+        1
+    )
     : 0;
 
+$totalCorrect = array_sum(
+    array_column($performanceData, 'correct')
+);
+
+$totalWrong = array_sum(
+    array_column($performanceData, 'wrong')
+);
+
+$totalUnanswered = array_sum(
+    array_column($performanceData, 'unanswered')
+);
+
+$averagePCI = count($performanceData) > 0
+    ? round(
+        array_sum(
+            array_column($performanceData, 'pci_score')
+        ) / count($performanceData),
+        1
+    )
+    : 0;
+
+
+// ============================================================
+// DATA FOR JAVASCRIPT CHARTS
+// ============================================================
+
+$scoreChartData = [];
+
+$questionChartData = [
+    [
+        'label' => 'Correct',
+        'value' => $totalCorrect
+    ],
+    [
+        'label' => 'Wrong',
+        'value' => $totalWrong
+    ],
+    [
+        'label' => 'Unanswered',
+        'value' => $totalUnanswered
+    ]
+];
+
+$pciChartData = [];
+
+foreach ($performanceData as $test) {
+
+    $pciChartData[] = [
+        'test' => $test['title'],
+        'pci' => $test['pci_score']
+    ];
+
+    $scoreChartData[] = [
+        'test' => $test['title'],
+        'percentage' => $test['percentage']
+    ];
+}
+
+
+// Current page
 $currentPage = 'test-analysis';
 
 ?>
@@ -94,6 +261,7 @@ $currentPage = 'test-analysis';
     >
 
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -104,6 +272,7 @@ $currentPage = 'test-analysis';
 
 <main class="student-main">
 
+    <!-- Page Header -->
     <div class="welcome-section">
 
         <div class="welcome-text">
@@ -113,7 +282,7 @@ $currentPage = 'test-analysis';
             </h1>
 
             <p class="welcome-subtitle">
-                Detailed overview of your assessments
+                Understand your performance across assessments
             </p>
 
         </div>
@@ -121,94 +290,278 @@ $currentPage = 'test-analysis';
     </div>
 
 
-    <!-- Analysis Summary -->
+    <!-- =====================================================
+         PERFORMANCE OVERVIEW
+         ===================================================== -->
 
-    <div class="stats-row">
+    <section class="analysis-section">
 
-        <div class="stat-card-gradient stat-card-total">
+        <div class="analysis-section-header">
 
-            <div class="stat-card-icon">
-                <?= icon('doc.text.fill', 24) ?>
+            <div>
+                <h2>Performance Overview</h2>
+
+                <p>
+                    Your average performance across evaluated tests.
+                </p>
             </div>
 
-            <div class="stat-card-value">
-                <?= $totalTests ?>
-            </div>
+            <div class="analysis-average">
 
-            <div class="stat-card-label">
-                Total Tests
-            </div>
+                <span class="analysis-average-value">
+                    <?= $averageScore ?>%
+                </span>
 
-        </div>
+                <span class="analysis-average-label">
+                    Average Score
+                </span>
 
-
-        <div class="stat-card-gradient">
-
-            <div class="stat-card-icon">
-                <?= icon('checkmark.circle.fill', 24) ?>
-            </div>
-
-            <div class="stat-card-value">
-                <?= $completedTests ?>
-            </div>
-
-            <div class="stat-card-label">
-                Completed
             </div>
 
         </div>
 
 
-        <div class="stat-card-gradient">
+        <div class="analysis-chart-grid">
 
-            <div class="stat-card-icon">
-                <?= icon('clock.fill', 24) ?>
+            <!-- Score Chart -->
+            <div class="analysis-card">
+
+                <div class="analysis-card-header">
+
+                    <div>
+                        <h3>Score by Test</h3>
+
+                        <p>
+                            Percentage achieved in each assessment.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas id="scoreChart"></canvas>
+
+                </div>
+
             </div>
 
-            <div class="stat-card-value">
-                <?= $inProgressTests ?>
-            </div>
 
-            <div class="stat-card-label">
-                In Progress
+            <!-- Question Performance -->
+            <div class="analysis-card">
+
+                <div class="analysis-card-header">
+
+                    <div>
+                        <h3>Question Performance</h3>
+
+                        <p>
+                            Correct, wrong and unanswered questions.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="chart-container chart-container-small">
+
+                    <canvas id="questionChart"></canvas>
+
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+    </section>
 
 
-    <!-- Detailed Statistics -->
+    <!-- =====================================================
+         PCI ANALYSIS
+         ===================================================== -->
 
-    <div style="margin-top: 30px;">
+    <section class="analysis-section">
 
-        <h2>Assessment Overview</h2>
+        <div class="analysis-section-header">
 
-        <div style="margin-top: 20px;">
+            <div>
 
-            <p>
-                <strong>Pending / Active:</strong>
-                <?= $pendingTests ?>
-            </p>
+                <h2>Performance Consistency Index</h2>
 
-            <p>
-                <strong>Not Started:</strong>
-                <?= $notStartedTests ?>
-            </p>
+                <p>
+                    View your consistency across evaluated assessments.
+                </p>
 
-            <p>
-                <strong>Total Questions:</strong>
-                <?= $totalQuestions ?>
-            </p>
+            </div>
 
-            <p>
-                <strong>Completion Rate:</strong>
-                <?= $completionRate ?>%
-            </p>
+            <div class="analysis-average">
+
+                <span class="analysis-average-value">
+                    <?= $averagePCI ?>
+                </span>
+
+                <span class="analysis-average-label">
+                    Average PCI
+                </span>
+
+            </div>
 
         </div>
 
-    </div>
+
+        <div class="analysis-card">
+
+            <div class="analysis-card-header">
+
+                <div>
+
+                    <h3>PCI by Test</h3>
+
+                    <p>
+                        Performance consistency for each assessment.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="chart-container">
+
+                <canvas id="pciChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TEST-WISE PERFORMANCE
+         ===================================================== -->
+
+    <section class="analysis-section">
+
+        <div class="analysis-section-header">
+
+            <div>
+
+                <h2>Test-wise Performance</h2>
+
+                <p>
+                    Detailed breakdown of your completed assessments.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="analysis-table-card">
+
+            <?php if (empty($performanceData)): ?>
+
+                <div class="analysis-empty">
+
+                    <h3>No completed tests yet</h3>
+
+                    <p>
+                        Complete an assessment to see your detailed
+                        performance here.
+                    </p>
+
+                </div>
+
+            <?php else: ?>
+
+                <div class="analysis-table-wrapper">
+
+                    <table class="analysis-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Test</th>
+
+                                <th>Score</th>
+
+                                <th>Accuracy</th>
+
+                                <th>Correct</th>
+
+                                <th>Wrong</th>
+
+                                <th>Unanswered</th>
+
+                                <th>Time</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <?php foreach ($performanceData as $test): ?>
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="test-name">
+                                            <?= h($test['title']) ?>
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <strong>
+                                            <?= h($test['score']) ?>
+                                            /
+                                            <?= h($test['total']) ?>
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="accuracy-badge">
+                                            <?= h($test['percentage']) ?>%
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        <?= h($test['correct']) ?>
+                                    </td>
+
+                                    <td>
+                                        <?= h($test['wrong']) ?>
+                                    </td>
+
+                                    <td>
+                                        <?= h($test['unanswered']) ?>
+                                    </td>
+
+                                    <td>
+                                        <?= h($test['time_taken']) ?>
+                                    </td>
+
+                                </tr>
+
+                            <?php endforeach; ?>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            <?php endif; ?>
+
+        </div>
+
+    </section>
 
 </main>
 <?php include __DIR__ . '/../../includes/student_footer.php'; ?>
@@ -255,7 +608,224 @@ function updateThemeUI(theme) {
 
 })();
 
+// ============================================================
+// ANALYSIS CHARTS
+// ============================================================
 
+const scoreChartData = <?= json_encode($scoreChartData) ?>;
+const questionChartData = <?= json_encode($questionChartData) ?>;
+const pciChartData = <?= json_encode($pciChartData) ?>;
+
+
+// ------------------------------------------------------------
+// Score by Test
+// ------------------------------------------------------------
+
+const scoreCanvas = document.getElementById('scoreChart');
+
+if (scoreCanvas && scoreChartData.length > 0) {
+
+    new Chart(scoreCanvas, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: scoreChartData.map(item => item.test),
+
+            datasets: [{
+                label: 'Score (%)',
+
+                data: scoreChartData.map(
+                    item => item.percentage
+                ),
+
+                borderWidth: 0,
+
+                borderRadius: 8
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    max: 100,
+
+                    ticks: {
+                        callback: value => value + '%'
+                    }
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            return context.parsed.y + '%';
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+// ------------------------------------------------------------
+// Question Performance
+// ------------------------------------------------------------
+
+const questionCanvas =
+    document.getElementById('questionChart');
+
+if (questionCanvas) {
+
+    new Chart(questionCanvas, {
+
+        type: 'doughnut',
+
+        data: {
+
+            labels: questionChartData.map(
+                item => item.label
+            ),
+
+            datasets: [{
+
+                data: questionChartData.map(
+                    item => item.value
+                ),
+
+                borderWidth: 0
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            cutout: '65%',
+
+            plugins: {
+
+                legend: {
+
+                    position: 'bottom'
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+// ------------------------------------------------------------
+// PCI by Test
+// ------------------------------------------------------------
+
+const pciCanvas =
+    document.getElementById('pciChart');
+
+if (pciCanvas && pciChartData.length > 0) {
+
+    new Chart(pciCanvas, {
+
+        type: 'line',
+
+        data: {
+
+            labels: pciChartData.map(
+                item => item.test
+            ),
+
+            datasets: [{
+
+                label: 'PCI',
+
+                data: pciChartData.map(
+                    item => item.pci
+                ),
+
+                borderWidth: 3,
+
+                tension: 0.35,
+
+                fill: false,
+
+                pointRadius: 5,
+
+                pointHoverRadius: 7
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    max: 100
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            }
+
+        }
+
+    });
+
+}
 // Initialize Lucide icons
 lucide.createIcons();
 </script>
