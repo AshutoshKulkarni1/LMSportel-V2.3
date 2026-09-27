@@ -20,6 +20,7 @@ if (!isset($currentPage)) {
  */
 $pageToNavMap = [
     'dashboard' => 'dashboard',
+    'my-tests'  => 'my-tests' ,
     'results'   => 'results',
     'analytics' => 'analytics',
     'profile'   => 'profile',
@@ -130,8 +131,8 @@ $currentNav = $pageToNavMap[$currentPage] ?? $currentPage;
 
                 <!-- My Tests -->
                 <a
-                    href="dashboard.php"
-                    class="sidebar-nav-item"
+                    href="my-tests.php"
+                    class="sidebar-nav-item<?=$currentNav=== 'my-tests'?'active' : '' ?>"
                 >
                     <?= icon('test', 20) ?>
                     <span>My Tests</span>
