@@ -448,7 +448,103 @@ $currentPage = 'dashboard';
                                                     </div>
                                                 </div>
                                             </td>
+                                                                                </tr>
+
+                                        <!-- Expanded Test Details -->
+                                        <tr class="test-table-details-row">
+                                            <td colspan="5">
+                                                <div class="test-table-details-inner">
+                                                    <div class="test-table-details-content">
+
+                                                        <div class="test-table-details-header">
+                                                            <div class="test-card-icon">
+                                                                <?= icon('doc.text.fill', 24) ?>
+                                                            </div>
+
+                                                            <div class="test-table-details-title">
+                                                                <h3><?= h($t['title']) ?></h3>
+                                                                <span>
+                                                                    <?= icon('clock', 13) ?>
+                                                                    <?= $t['duration_minutes'] ?> min
+                                                                </span>
+                                                            </div>
+
+                                                            <span class="badge <?= $statusClass ?>">
+                                                                <?= ucfirst($t['status']) ?>
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="test-table-details-body">
+
+                                                            <div class="test-detail-description">
+                                                                <span class="test-detail-label">
+                                                                    Description
+                                                                </span>
+
+                                                                <p>
+                                                                    Assessment for evaluating your
+                                                                    understanding of the topics covered
+                                                                    in this test.
+                                                                </p>
+                                                            </div>
+
+                                                            <div class="test-detail-grid">
+
+                                                                <div class="test-detail-item">
+                                                                    <span>Duration</span>
+                                                                    <strong>
+                                                                        <?= $t['duration_minutes'] ?> min
+                                                                    </strong>
+                                                                </div>
+
+                                                                <div class="test-detail-item">
+                                                                    <span>Your Status</span>
+                                                                    <strong>
+                                                                        <?= $t['submission_status']
+                                                                            ? ucfirst(str_replace('_', ' ', $t['submission_status']))
+                                                                            : 'Not Started'
+                                                                        ?>
+                                                                    </strong>
+                                                                </div>
+
+                                                                <div class="test-detail-item">
+                                                                    <span>Start Time</span>
+                                                                    <strong>
+                                                                        <?= !empty($t['start_time'])
+                                                                            ? date('g:i A', strtotime($t['start_time']))
+                                                                            : '—'
+                                                                        ?>
+                                                                    </strong>
+                                                                </div>
+
+                                                                <div class="test-detail-item">
+                                                                    <span>End Time</span>
+                                                                    <strong>
+                                                                        <?= !empty($t['end_time'])
+                                                                            ? date('g:i A', strtotime($t['end_time']))
+                                                                            : '—'
+                                                                        ?>
+                                                                    </strong>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <a
+                                                                href="my-tests.php?test_id=<?= $t['id'] ?>"
+                                                                class="test-full-details-link"
+                                                                onclick="event.stopPropagation();"
+                                                            >
+                                                                <span>View Full Details</span>
+                                                                <?= icon('arrow.right', 16) ?>
+                                                            </a>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </td>
                                         </tr>
+
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -511,21 +607,102 @@ $currentPage = 'dashboard';
                                     elseif ($t['status'] === 'completed') $statusClass = 'badge-success';
                                     elseif ($t['status'] === 'scheduled') $statusClass = 'badge-info';
                                 ?>
-                                <div class="test-card">
-                                    <div class="test-card-top">
-                                        <div class="test-card-icon">
-                                            <?= icon('doc.text.fill', 24) ?>
-                                        </div>
-                                        <span class="badge <?= $statusClass ?>"><?= ucfirst($t['status']) ?></span>
-                                    </div>
-                                    <h3 class="test-card-title"><?= h($t['title']) ?></h3>
-                                    <div class="test-card-meta">
-                                        <span><?= icon('clock', 13) ?> <?= $t['duration_minutes'] ?> min</span>
-                                    </div>
-                                    <div class="test-card-footer">
-                                        <?= $actionBtn ?>
-                                    </div>
-                                </div>
+                                <div class="test-card test-expandable">
+
+    <div class="test-card-top">
+
+        <div class="test-card-icon">
+            <?= icon('doc.text.fill', 24) ?>
+        </div>
+
+        <span class="badge <?= $statusClass ?>">
+            <?= ucfirst($t['status']) ?>
+        </span>
+
+    </div>
+
+    <h3 class="test-card-title">
+        <?= h($t['title']) ?>
+    </h3>
+
+    <div class="test-card-meta">
+        <span>
+            <?= icon('clock', 13) ?>
+            <?= $t['duration_minutes'] ?> min
+        </span>
+    </div>
+
+
+    <!-- EXPANDED DETAILS -->
+
+    <div class="test-card-details">
+
+        <div class="test-detail-description">
+
+            <span class="test-detail-label">
+                Description
+            </span>
+
+            <p>
+                Assessment for evaluating your understanding
+                of the topics covered in this test.
+            </p>
+
+        </div>
+
+
+        <div class="test-detail-grid">
+
+            <div class="test-detail-item">
+                <span>Duration</span>
+                <strong><?= $t['duration_minutes'] ?> min</strong>
+            </div>
+
+            <div class="test-detail-item">
+                <span>Your Status</span>
+                <strong>
+                    <?= $t['submission_status']
+                        ? ucfirst(str_replace('_', ' ', $t['submission_status']))
+                        : 'Not Started'
+                    ?>
+                </strong>
+            </div>
+
+            <div class="test-detail-item">
+                <span>Start Time</span>
+                <strong>
+                    <?= !empty($t['start_time'])
+                        ? date('g:i A', strtotime($t['start_time']))
+                        : '—'
+                    ?>
+                </strong>
+            </div>
+
+            <div class="test-detail-item">
+                <span>End Time</span>
+                <strong>
+                    <?= !empty($t['end_time'])
+                        ? date('g:i A', strtotime($t['end_time']))
+                        : '—'
+                    ?>
+                </strong>
+            </div>
+
+        </div>
+
+
+        <a
+            href="my-tests.php?test_id=<?= $t['id'] ?>"
+            class="test-full-details-link"
+            onclick="event.stopPropagation();"
+        >
+            <span>View Full Details</span>
+            <?= icon('arrow.right', 16) ?>
+        </a>
+
+    </div>
+
+</div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -729,6 +906,119 @@ function updateThemeUI(theme) {
 })();
 
 // Initialize Lucide icons (script loaded synchronously in <head>)
+
+// Test card expansion
+
+const testExpandableCards =
+    document.querySelectorAll('.test-expandable');
+
+testExpandableCards.forEach(card => {
+
+    card.addEventListener('click', function () {
+
+        const isExpanded =
+            card.classList.contains('expanded');
+
+        // Close every test card
+        testExpandableCards.forEach(otherCard => {
+            otherCard.classList.remove('expanded');
+
+            const details =
+                otherCard.querySelector('.test-card-details');
+
+            if (details) {
+                details.style.maxHeight = '0px';
+            }
+        });
+
+        // Open clicked card
+        if (!isExpanded) {
+
+            card.classList.add('expanded');
+
+            const details =
+                card.querySelector('.test-card-details');
+
+            if (details) {
+
+                requestAnimationFrame(() => {
+
+                    details.style.maxHeight =
+                        details.scrollHeight + 'px';
+
+                });
+
+            }
+
+        }
+
+    });
+
+});
+// ─────────────────────────────────────────────
+// Table View Test Expansion
+// ─────────────────────────────────────────────
+
+const testTableRows =
+    document.querySelectorAll('.test-row-expandable');
+
+testTableRows.forEach(row => {
+
+    row.addEventListener('click', function (e) {
+
+        // Don't expand when clicking an action/link/button
+        if (
+            e.target.closest('a') ||
+            e.target.closest('button') ||
+            e.target.closest('.overflow-menu')
+        ) {
+            return;
+        }
+
+        const detailsRow = row.nextElementSibling;
+
+        if (
+            !detailsRow ||
+            !detailsRow.classList.contains('test-table-details-row')
+        ) {
+            return;
+        }
+
+        const isExpanded =
+            detailsRow.classList.contains('expanded');
+
+
+        // Close all other rows
+        testTableRows.forEach(otherRow => {
+
+            otherRow.classList.remove('expanded');
+
+            const otherDetails =
+                otherRow.nextElementSibling;
+
+            if (
+                otherDetails &&
+                otherDetails.classList.contains(
+                    'test-table-details-row'
+                )
+            ) {
+                otherDetails.classList.remove('expanded');
+            }
+        });
+
+
+        // Open clicked row
+        if (!isExpanded) {
+
+            row.classList.add('expanded');
+            detailsRow.classList.add('expanded');
+
+        }
+
+    });
+
+});
+
 lucide.createIcons();
 </script>
 </body>

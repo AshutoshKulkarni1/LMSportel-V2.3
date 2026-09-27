@@ -2990,6 +2990,349 @@ tr {
   margin-top: auto;
   padding-top: var(--space-2);
 }
+/* ─── Expandable Test Cards ───────────────────────────── */
+
+.test-expandable {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.test-card-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+
+    margin-top: 0;
+    padding-top: 0;
+
+    transition:
+        max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.25s ease,
+        margin-top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        padding-top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.test-expandable.expanded .test-card-details {
+    opacity: 1;
+
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+
+    border-top: 1px solid var(--glass-border);
+}
+/* Expandable Test Cards */
+.test-expandable {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.test-card-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    padding-top: 0;
+
+    transition:
+        max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.25s ease,
+        margin-top 0.45s ease,
+        padding-top 0.45s ease;
+}
+
+.test-expandable.expanded .test-card-details {
+    opacity: 1;
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--glass-border);
+}
+
+.test-detail-label {
+    display: block;
+    font-size: var(--fs-11);
+    font-weight: 600;
+    color: var(--gray-50);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+}
+
+.test-detail-description p {
+    margin: 0;
+    font-size: var(--fs-13);
+    line-height: 1.5;
+    color: var(--gray-60);
+}
+
+.test-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+}
+
+.test-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.test-detail-item span {
+    font-size: var(--fs-11);
+    color: var(--gray-50);
+}
+
+.test-detail-item strong {
+    font-size: var(--fs-13);
+    font-weight: 600;
+    color: var(--gray-80);
+}
+
+.test-full-details-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: var(--space-5);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* ─── Expandable Test Table Rows ─────────────────────────── */
+
+.tests-table-view .test-row-expandable {
+    cursor: pointer;
+}
+
+.tests-table-view .test-row-expandable:hover {
+    background: var(--gray-5);
+}
+
+
+/* Hidden details row */
+
+.test-table-details-row {
+    display: table-row;
+}
+
+.test-table-details-row > td {
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+
+/* Smooth height animation */
+
+.test-table-details-inner {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition:
+        grid-template-rows 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* Content wrapper */
+
+.test-table-details-content {
+    overflow: hidden;
+    min-height: 0;
+
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+
+    opacity: 0;
+
+    transition:
+        opacity 0.25s ease,
+        padding-top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        padding-bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* Expanded */
+
+.test-table-details-row.expanded .test-table-details-inner {
+    grid-template-rows: 1fr;
+}
+
+.test-table-details-row.expanded .test-table-details-content {
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-5);
+
+    opacity: 1;
+}
+
+
+/* Card-style header */
+
+.test-table-details-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+
+    background: var(--surface-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+
+    padding: var(--space-5) var(--space-6);
+
+    box-shadow: var(--neu-card);
+}
+
+
+/* Icon */
+
+.test-table-details-header .test-card-icon {
+    flex-shrink: 0;
+}
+
+
+/* Title */
+
+.test-table-details-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.test-table-details-title h3 {
+    margin: 0 0 4px;
+
+    font-size: var(--fs-16);
+    font-weight: 600;
+    color: var(--gray-100);
+}
+
+.test-table-details-title span {
+    display: inline-flex;
+    align-items: center;
+
+    font-size: var(--fs-12);
+    color: var(--gray-50);
+}
+
+
+/* Detail body */
+
+.test-table-details-body {
+    background: var(--surface-card);
+
+    border-left: 1px solid var(--glass-border);
+    border-right: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+
+    padding: var(--space-6);
+
+    margin-top: -1px;
+}
+
+
+/* Responsive */
+
+@media (max-width: 700px) {
+
+    .test-table-details-header {
+        flex-wrap: wrap;
+    }
+
+    .test-table-details-header .badge {
+        margin-left: auto;
+    }
+
+    .test-table-details-body {
+        padding: var(--space-5);
+    }
+
+}
+
+/* Description */
+
+.test-detail-label {
+    display: block;
+
+    font-size: var(--fs-11);
+    font-weight: 600;
+
+    color: var(--gray-50);
+
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    margin-bottom: var(--space-2);
+}
+
+.test-detail-description p {
+    margin: 0;
+
+    font-size: var(--fs-13);
+    line-height: 1.5;
+
+    color: var(--gray-60);
+}
+
+
+/* Details grid */
+
+.test-detail-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: var(--space-4);
+
+    margin-top: var(--space-5);
+}
+
+.test-detail-item {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+.test-detail-item span {
+    font-size: var(--fs-11);
+    color: var(--gray-50);
+}
+
+.test-detail-item strong {
+    font-size: var(--fs-13);
+    font-weight: 600;
+
+    color: var(--gray-80);
+}
+
+
+/* Full details link */
+
+.test-full-details-link {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 6px;
+
+    margin-top: var(--space-5);
+
+    font-size: var(--fs-12);
+    font-weight: 600;
+
+    color: var(--accent);
+
+    text-decoration: none;
+}
+
+.test-full-details-link svg {
+    transition: transform 0.2s ease;
+}
+
+.test-full-details-link:hover svg {
+    transform: translateX(3px);
+}
 
 /* ─── Bottom Info Card ─────────────────────────────────────── */
 .info-card {
