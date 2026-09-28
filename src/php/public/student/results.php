@@ -112,36 +112,93 @@ $currentPage = 'results';
 
                 <!-- Summary Stats -->
                 <div class="stats-row">
-                    <div class="stat-card-gradient stat-card-total">
-                        <div class="stat-card-icon"><?= icon('chart', 24) ?></div>
-                        <div class="stat-card-value"><?= $totalEvaluated ?></div>
-                        <div class="stat-card-label">Tests Evaluated</div>
-                        <div class="stat-card-desc">Completed assessments</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <div class="stat-card-gradient stat-card-completed">
-                        <div class="stat-card-icon"><?= icon('star', 24) ?></div>
-                        <div class="stat-card-value"><?= $totalEvaluated > 0 ? $avgPercentage . '%' : '—' ?></div>
-                        <div class="stat-card-label">Average Score</div>
-                        <div class="stat-card-desc">Across all evaluated tests</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <div class="stat-card-gradient stat-card-pending">
-                        <div class="stat-card-icon"><?= icon('graph', 24) ?></div>
-                        <div class="stat-card-value"><?= $totalEvaluated > 0 ? round($highestScore) . '%' : '—' ?></div>
-                        <div class="stat-card-label">Highest Score</div>
-                        <div class="stat-card-desc">Best performance</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
+                    <a href="result-details.php?type=evaluated" class="stat-card-link">
+    <div class="stat-card-gradient stat-card-total">
+        <div class="stat-card-icon"><?= icon('chart', 24) ?></div>
+        <div class="stat-card-value"><?= $totalEvaluated ?></div>
+        <div class="stat-card-label">Tests Evaluated</div>
+        <div class="stat-card-desc">Completed assessments</div>
+        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
+    </div>
+</a>
+                    <a href="result-details.php?type=average" class="stat-card-link">
+    <div class="stat-card-gradient stat-card-completed">
+        <div class="stat-card-icon">
+            <?= icon('star', 24) ?>
+        </div>
+
+        <div class="stat-card-value">
+            <?= $totalEvaluated > 0 ? $avgPercentage . '%' : '—' ?>
+        </div>
+
+        <div class="stat-card-label">
+            Average Score
+        </div>
+
+        <div class="stat-card-desc">
+            Across all evaluated tests
+        </div>
+
+        <div class="stat-card-arrow">
+            <?= icon('arrow-right', 14) ?>
+        </div>
+    </div>
+</a>
+                    <a href="result-details.php?type=highest" class="stat-card-link">
+    <div class="stat-card-gradient stat-card-pending">
+        <div class="stat-card-icon">
+            <?= icon('graph', 24) ?>
+        </div>
+
+        <div class="stat-card-value">
+            <?= $totalEvaluated > 0 ? round($highestScore) . '%' : '—' ?>
+        </div>
+
+        <div class="stat-card-label">
+            Highest Score
+        </div>
+
+        <div class="stat-card-desc">
+            Best performance
+        </div>
+
+        <div class="stat-card-arrow">
+            <?= icon('arrow-right', 14) ?>
+        </div>
+    </div>
+</a>
                     <?php if ($pendingCount > 0): ?>
-                    <div class="stat-card-gradient stat-card-completed" style="--grad:#826A00,#B8860B;">
-                        <div class="stat-card-icon"><?= icon('clock', 24) ?></div>
-                        <div class="stat-card-value"><?= $pendingCount ?></div>
-                        <div class="stat-card-label">Under Evaluation</div>
-                        <div class="stat-card-desc">Results not yet announced</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <?php endif; ?>
+
+<a href="result-details.php?type=pending" class="stat-card-link">
+    <div
+        class="stat-card-gradient stat-card-completed"
+        style="--grad:#826A00,#B8860B;"
+    >
+
+        <div class="stat-card-icon">
+            <?= icon('clock', 24) ?>
+        </div>
+
+        <div class="stat-card-value">
+            <?= $pendingCount ?>
+        </div>
+
+        <div class="stat-card-label">
+            Under Evaluation
+        </div>
+
+        <div class="stat-card-desc">
+            Results not yet announced
+        </div>
+
+        <div class="stat-card-arrow">
+            <?= icon('arrow-right', 14) ?>
+        </div>
+
+    </div>
+</a>
+
+<?php endif; ?>
                 </div>
 
                 <!-- Pending evaluation banner — no premature scores shown -->
