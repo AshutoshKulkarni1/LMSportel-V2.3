@@ -2471,6 +2471,9 @@ switch ($type) {
 
     <?php endif; ?>
 
+<?php endif; ?>
+
+<?php endif; ?>
 
 </main>
 </div>
