@@ -105,29 +105,87 @@ $currentPage = 'profile';
                 </div>
 
                 <!-- Quick Stats Row -->
-                <div class="stats-row" style="margin-bottom:var(--space-6);">
-                    <div class="stat-card-gradient stat-card-total">
-                        <div class="stat-card-icon"><?= icon('test', 24) ?></div>
-                        <div class="stat-card-value"><?= $totalTests ?></div>
-                        <div class="stat-card-label">Assigned Tests</div>
-                        <div class="stat-card-desc">Total assessments assigned</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <div class="stat-card-gradient stat-card-completed">
-                        <div class="stat-card-icon"><?= icon('star', 24) ?></div>
-                        <div class="stat-card-value"><?= $avgScore ?>%</div>
-                        <div class="stat-card-label">Average Score</div>
-                        <div class="stat-card-desc">Across evaluated tests</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <div class="stat-card-gradient stat-card-pending">
-                        <div class="stat-card-icon"><?= icon('check-circle', 24) ?></div>
-                        <div class="stat-card-value"><?= $completionRate ?>%</div>
-                        <div class="stat-card-label">Completion Rate</div>
-                        <div class="stat-card-desc">Tests submitted vs assigned</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                </div>
+                <!-- Quick Stats Row -->
+<div class="stats-row" style="margin-bottom:var(--space-6);">
+
+    <!-- Assigned Tests → Full Analysis -->
+    <a
+        href="test-analysis.php"
+        class="stat-card-gradient stat-card-total"
+        style="text-decoration:none; color:inherit;"
+    >
+        <div class="stat-card-icon">
+            <?= icon('test', 24) ?>
+        </div>
+
+        <div class="stat-card-value">
+            <?= $totalTests ?>
+        </div>
+
+        <div class="stat-card-label">
+            Assigned Tests
+        </div>
+
+        <div class="stat-card-desc">
+            Total assessments assigned
+        </div>
+
+        <div class="stat-card-arrow">
+            <?= icon('arrow-right', 14) ?>
+        </div>
+    </a>
+
+
+    <!-- Average Score → Average Score Page -->
+    <a
+        href="average-score.php"
+        class="stat-card-gradient stat-card-completed"
+        style="text-decoration:none; color:inherit;"
+    >
+        <div class="stat-card-icon">
+            <?= icon('star', 24) ?>
+        </div>
+
+        <div class="stat-card-value">
+            <?= $avgScore ?>%
+        </div>
+
+        <div class="stat-card-label">
+            Average Score
+        </div>
+
+        <div class="stat-card-desc">
+            Across evaluated tests
+        </div>
+
+        <div class="stat-card-arrow">
+            <?= icon('arrow-right', 14) ?>
+        </div>
+    </a>
+
+
+    <!-- Completion Rate — Static, No Expansion -->
+    <div class="stat-card-gradient stat-card-pending">
+
+        <div class="stat-card-icon">
+            <?= icon('check-circle', 24) ?>
+        </div>
+
+        <div class="stat-card-value">
+            <?= $completionRate ?>%
+        </div>
+
+        <div class="stat-card-label">
+            Completion Rate
+        </div>
+
+        <div class="stat-card-desc">
+            Tests submitted vs assigned
+        </div>
+
+    </div>
+
+</div>
 
                 <!-- Profile Content Grid -->
                 <div class="profile-grid">
