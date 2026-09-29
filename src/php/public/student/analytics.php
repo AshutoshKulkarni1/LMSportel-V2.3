@@ -107,27 +107,58 @@ $currentPage = 'analytics';
 
                 <!-- Overview Stats -->
                 <div class="stats-row">
-                    <div class="stat-card-gradient stat-card-total">
-                        <div class="stat-card-icon"><?= icon('test', 24) ?></div>
-                        <div class="stat-card-value"><?= $totalTests ?></div>
-                        <div class="stat-card-label">Total Tests</div>
-                        <div class="stat-card-desc">All assigned assessments</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <div class="stat-card-gradient stat-card-completed">
-                        <div class="stat-card-icon"><?= icon('check-circle', 24) ?></div>
-                        <div class="stat-card-value"><?= $evaluatedCount ?></div>
-                        <div class="stat-card-label">Evaluated</div>
-                        <div class="stat-card-desc">Graded assessments</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
-                    <div class="stat-card-gradient stat-card-pending">
-                        <div class="stat-card-icon"><?= icon('graph', 24) ?></div>
-                        <div class="stat-card-value"><?= $avgPercentage ?>%</div>
-                        <div class="stat-card-label">Avg Score</div>
-                        <div class="stat-card-desc">Average performance</div>
-                        <div class="stat-card-arrow"><?= icon('arrow-right', 14) ?></div>
-                    </div>
+                    <a href="test-analysis.php" class="stat-card-gradient stat-card-total">
+    <div class="stat-card-icon">
+        <?= icon('doc.text.fill', 24) ?>
+    </div>
+
+    <div class="stat-card-value">
+        <?= $totalTests ?>
+    </div>
+
+    <div class="stat-card-label">
+        Total Tests
+    </div>
+
+    <div class="stat-card-desc">
+        All assigned assessments
+    </div>
+</a>
+                    <a href="evaluated.php" class="stat-card-gradient stat-card-completed">
+    <div class="stat-card-icon">
+        <?= icon('check-circle', 24) ?>
+    </div>
+
+    <div class="stat-card-value"><?= $evaluatedCount ?></div>
+
+    <div class="stat-card-label">Evaluated</div>
+
+    <div class="stat-card-desc">Graded assessments</div>
+
+    <div class="stat-card-arrow">
+        <?= icon('arrow-right', 14) ?>
+    </div>
+</a>
+        
+                    <a href="average-score.php" class="stat-card-gradient stat-card-pending">
+    <div class="stat-card-icon"><?= icon('graph', 24) ?></div>
+
+    <div class="stat-card-value">
+        <?= $avgPercentage ?>%
+    </div>
+
+    <div class="stat-card-label">
+        Avg Score
+    </div>
+
+    <div class="stat-card-desc">
+        Average performance
+    </div>
+
+    <div class="stat-card-arrow">
+        <?= icon('arrow-right', 14) ?>
+    </div>
+</a>
                 </div>
 
                 <!-- Status Breakdown -->
